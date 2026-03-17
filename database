@@ -1,0 +1,29 @@
+-- Create the database
+CREATE DATABASE IF NOT EXISTS hrms_elite;
+USE hrms_elite;
+
+-- 1. Create Employees Table
+CREATE TABLE IF NOT EXISTS employees (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    emp_id VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    department ENUM('Engineering', 'Operations', 'HR/Legal', 'Marketing') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- 2. Create Attendance Table
+CREATE TABLE IF NOT EXISTS attendance (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    employee_id INT(11) NOT NULL,
+    attendance_date DATE NOT NULL,
+    status ENUM('Present', 'Absent') NOT NULL,
+    -- This UNIQUE constraint is vital for the "ON DUPLICATE KEY UPDATE" logic in your PHP
+    UNIQUE KEY `one_record_per_day` (employee_id, attendance_date),
+    FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- 3. Insert some dummy data (Optional)
+INSERT INTO employees (emp_id, name, email, department) VALUES 
+('EMP001', 'Thosh', 'thosh@elite.com', 'Engineering'),
+('EMP002', 'Jane Smith', 'jane@elite.com', 'Operations');
